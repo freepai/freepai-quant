@@ -1,0 +1,56 @@
+version: '3.4'
+
+services:
+  command:
+    build: ./test
+    container_name: "${PROJECT_NAME}_command"
+    volumes:
+      - ./test:/tests-dir
+    depends_on:
+      - jupyter
+    links:
+      - jupyter
+    command: bash /tests-dir/run-test.sh
+
+  jupyter:
+    build: .
+    image: koinotice/jupyter
+    container_name: "${PROJECT_NAME}_jupyter"
+    volumes:
+      - /koinotice/data/jupyter:/data/jupyter
+    environment:
+    - NOTEBOOK_PASSWORD=${NOTEBOOK_PASSWORD}
+    - NOTEBOOK_DIR=/data/jupyter
+    - NOTEBOOK_IP=0.0.0.0
+    - NOTEBOOK_PORT=8888
+    ports:
+      - 8888:8888
+
+
+  mariadb:
+    image: mariadb
+    container_name: "${PROJECT_NAME}_mariadb"
+    stop_grace_period: 30s
+    ports:
+    - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: $DB_ROOT_PASSWORD
+      MYSQL_DATABASE: $DB_NAME
+      MYSQL_USER: $DB_USER
+      MYSQL_PASSWORD: $DB_PASSWORD
+    volumes:
+    # NOTE: your data will be stored in ./mysql
+    - ./data/mysql:/var/lib/mysql
+
+#
+#  redis:
+#    #image: redis
+#    image: wodby/redis:$REDIS_TAG
+#    container_name: "${PROJECT_NAME}_redis"
+#    environment:
+#    - REDIS_PASSWORD=root
+#    #command: redis-server --requirepass yourpassword
+#    ports:
+#    - "6379:6379"
+#    volumes:
+#    - ./data/redis:/data

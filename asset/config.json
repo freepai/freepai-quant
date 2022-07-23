@@ -1,0 +1,18 @@
+{
+    "RABBITMQ": {
+        "host": "127.0.0.1",
+        "port": 5672,
+        "username": "test",
+        "password": "123456"
+    },
+    "PROXY": "http://127.0.0.1:1087",
+
+    "ACCOUNTS": [
+        {
+            "platform": "binance",
+            "account": "test@gmail.com",
+            "access_key": "abc123",
+            "secret_key": "abc123"
+        }
+    ]
+}

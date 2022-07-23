@@ -1,0 +1,82 @@
+version: '3'
+
+services:
+
+  v2ray:
+    image: v2ray/official
+    container_name: v2ray
+    restart: always
+    command: v2ray -config=/etc/v2ray/config.json
+    ports:
+      - "8888:8888"
+      #- "127.0.0.1:8889:8889"
+    volumes:
+      - ./data/v2ray:/etc/v2ray
+  market:
+    container_name: "${PROJECT_NAME}_market"
+    image: gqbot:market
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+      - ./config.json:/app/config.json
+
+  rabbitmq:
+    container_name: "${PROJECT_NAME}_rabbitmq"
+    hostname: rabbitmq
+    image: rabbitmq:3-management
+    environment:
+      - RABBITMQ_NODENAME=my-rabbit
+    ports:
+      - 15672
+      - 5672
+
+  jupyter:
+    container_name: "${PROJECT_NAME}_jupyter"
+    image: koinotice/jupyter
+    build:
+      context: ./docker/jupyter
+      dockerfile:  Dockerfile
+    volumes:
+      - ./data/jupyter:/data/jupyter
+    environment:
+      - NOTEBOOK_PASSWORD=${NOTEBOOK_PASSWORD}
+      - NOTEBOOK_DIR=/data/jupyter
+      - NOTEBOOK_IP=0.0.0.0
+      - NOTEBOOK_PORT=8888
+    ports:
+      - 8888:8888
+
+
+  mariadb:
+    image: mariadb
+    container_name: "${PROJECT_NAME}_mariadb"
+    stop_grace_period: 30s
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: $DB_ROOT_PASSWORD
+      MYSQL_DATABASE: $DB_NAME
+      MYSQL_USER: $DB_USER
+      MYSQL_PASSWORD: $DB_PASSWORD
+    volumes:
+      # NOTE: your data will be stored in ./mysql
+      - ./data/mysql:/var/lib/mysql
+
+#  codeserver:
+#    image: codercom/code-server
+#    container_name: code
+#    volumes:
+#      - ./data:/root/projects
+#      - ./data:/data
+#    #        If u use https://github.com/jwilder/nginx-proxy (recommended)
+#    #        environment:
+#    #            VIRTUAL_HOST: your.domain.tld
+#    #            VIRTUAL_PORT: 8443
+#    ports:
+#      # With SSL
+#      - "6100:8443"
+#    # With HTTP
+#    #- "80:8443"
+#    command: code-server --no-auth # if using proxy add: --allow-http
