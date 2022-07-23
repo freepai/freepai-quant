@@ -9,21 +9,11 @@ services:
     command: v2ray -config=/etc/v2ray/config.json
     ports:
       - "8888:8888"
-      #- "127.0.0.1:8889:8889"
     volumes:
       - ./data/v2ray:/etc/v2ray
-  market:
-    container_name: "${PROJECT_NAME}_market"
-    image: gqbot:market
-    build:
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - .:/app
-      - ./config.json:/app/config.json
 
   rabbitmq:
-    container_name: "${PROJECT_NAME}_rabbitmq"
+    container_name: "rabbitmq"
     hostname: rabbitmq
     image: rabbitmq:3-management
     environment:
@@ -32,12 +22,23 @@ services:
       - 15672
       - 5672
 
+  market:
+    container_name: "market"
+    image: registry.us-west-1.aliyuncs.com/nextquant/market-server:0.1.0
+    volumes:
+      - .:/app
+      - ./config.json:/app/config.json
+
+  asset:
+    container_name: "market"
+    image: registry.us-west-1.aliyuncs.com/nextquant/market-server:0.1.0
+    volumes:
+      - .:/app
+      - ./config.json:/app/config.json
+
   jupyter:
-    container_name: "${PROJECT_NAME}_jupyter"
+    container_name: "jupyter"
     image: koinotice/jupyter
-    build:
-      context: ./docker/jupyter
-      dockerfile:  Dockerfile
     volumes:
       - ./data/jupyter:/data/jupyter
     environment:
@@ -48,10 +49,8 @@ services:
     ports:
       - 8888:8888
 
-
   mariadb:
     image: mariadb
-    container_name: "${PROJECT_NAME}_mariadb"
     stop_grace_period: 30s
     ports:
       - 3306:3306

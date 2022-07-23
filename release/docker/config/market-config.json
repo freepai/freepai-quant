@@ -1,0 +1,27 @@
+{
+    "LOG": {
+        "console": true,
+        "level": "DEBUG",
+        "path": "/data/logs/servers/Market",
+        "name": "market.log",
+        "clear": true,
+        "backup_count": 5
+    },
+    "RABBITMQ": {
+        "host": "127.0.0.1",
+        "port": 5672,
+        "username": "guest",
+        "password": "guest"
+    },
+    "MARKETS": {
+        "binance_future": {
+            "symbols": [
+                "BTC/USDT"
+            ],
+            "channels": [
+                "orderbook", "aggTrade"
+            ],
+            "orderbook_length": 20
+        }
+    }
+}
