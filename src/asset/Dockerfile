@@ -1,4 +1,4 @@
-FROM registry.us-west-1.aliyuncs.com/nextquant/quant:0.1.0
+FROM docker.io/freepai/quant:0.1.0
 
 WORKDIR /app
 
